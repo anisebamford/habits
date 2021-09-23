@@ -10,7 +10,7 @@ const today = () => {
   return [y, m, d].join("-");
 }
 
-const spree = (storage,date) => {
+const spree = (storage, date) => {
   const sorted = [...storage.dates].sort().reverse().filter((d) => date >= d);
   let lastDate = new Date(sorted.shift());
   let count = 0;
@@ -62,7 +62,7 @@ export default function App() {
 
   const color = (storage, date) => {
     let h = Math.floor(spree(storage, date) * 12) % 360;
-    let l = 52 + Math.floor(spree(storage) / 30) * 4 + "%";
+    let l = 52 + Math.floor(spree(storage, date) / 30) * 4 + "%";
     const color = `hsl(${h}, 70%, ${l})`;
     return color;
   }
