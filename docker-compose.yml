@@ -1,0 +1,51 @@
+#
+# Client: ProTec Building Services
+# Project: protec-connect
+#
+
+version: '3'
+
+networks:
+  default:
+  reverse-proxy_default:
+    external: true
+
+services:
+  node:
+    command: yarn start
+    environment:
+      # node
+      - NODE_ENV
+      - npm_config_registry
+      ## jwilder/nginx_proxy
+      - VIRTUAL_HOST
+      - VIRTUAL_PORT=${NODE_PORT}
+      - VIRTUAL_PROTO
+      ## ermine/system-api
+      - DOMAIN
+      ## protec-connect
+      - SNOWPACK_PUBLIC_API_ROOT
+      # verdaccio
+      - VERDACCIO_TOKEN
+    hostname: node-${COMPOSE_PROJECT_NAME}
+    expose:
+      - ${NODE_PORT}
+    external_links:
+      - nginx:${VERDACCIO}
+    image: node:14
+    networks:
+      - default
+      - reverse-proxy_default
+    restart: unless-stopped
+    stdin_open: true
+    tty: true
+    volumes:
+      - ./:/home/node/app
+      - ~/.npmrc:/usr/local/etc/npmrc
+      - certs:/home/node/certs
+    working_dir: /home/node/app
+
+volumes:
+  certs:
+    external:
+      name: ${CERTS}
